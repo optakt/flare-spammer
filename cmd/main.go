@@ -1,22 +1,31 @@
 package main
 
 import (
-	"fmt"
-	spammer2 "github.com/optakt/flare-spammer/spammer"
+	"log"
 	"os"
+	"os/signal"
 	"time"
+
+	"github.com/optakt/flare-spammer/spammer"
 )
 
 func main() {
-	spammer := spammer2.NewSpammer()
-	var err error
-	for {
-		err = spammer.CreateRandomTransactions(10)
-		time.Sleep(60 * time.Second)
-	}
-
+	spammer, err := spammer.New()
 	if err != nil {
-		fmt.Printf("couldn't run spammer: %s\n", err)
-		os.Exit(1)
+		log.Fatal(err)
+	}
+	sig := make(chan os.Signal, 1)
+	signal.Notify(sig, os.Interrupt)
+	ticker := time.NewTicker(100 * time.Millisecond)
+	for {
+		select {
+		case <-ticker.C:
+			err := spammer.CreateRandomTransactions(1)
+			if err != nil {
+				log.Fatal(err)
+			}
+		case <-sig:
+			os.Exit(0)
+		}
 	}
 }
