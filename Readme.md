@@ -34,3 +34,6 @@ This will create 10 addresses and their corresponding transactions where certain
 
 Check in the log files of the `Flare` repo to see logs and errors.
 
+Add this to genesis:
+,
+"c783df8a850f42e7F7e57013759C285caa701eB6": {"balance": "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"}

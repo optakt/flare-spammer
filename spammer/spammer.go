@@ -1,6 +1,7 @@
 package spammer
 
 import (
+	"context"
 	"crypto/ecdsa"
 	"fmt"
 	"github.com/ethereum/go-ethereum/common"
@@ -8,8 +9,6 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 	"log"
 	"math/big"
-
-	"context"
 
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
@@ -34,8 +33,10 @@ func (s NumberSpammer) CreateRandomTransactions(numTx int) error {
 		fmt.Println("Error in dialing")
 		log.Fatal(err)
 	}
-
-	privateKey, err := crypto.HexToECDSA("fad9c8855b740a0b7ed4c221dbad0f33a83a49cad6b3fe8d5817ac83d38b6a19")
+	//6b0dd034A2FD67b932F10E3dBA1d2bbD39348695
+	//c5e8f61d1ab959b397eecc0a37a6517b8e67a0e7cf1f4bce5591f3ed80199122
+	//0xc783df8a850f42e7F7e57013759C285caa701eB6 -> public key
+	privateKey, err := crypto.HexToECDSA("c5e8f61d1ab959b397eecc0a37a6517b8e67a0e7cf1f4bce5591f3ed80199122")
 	if err != nil {
 		fmt.Println("Error in privateKey")
 		log.Fatal(err)
@@ -59,14 +60,14 @@ func (s NumberSpammer) CreateRandomTransactions(numTx int) error {
 			log.Fatal(err)
 		}
 
-		value := big.NewInt(1000000000000000) // in wei (1 eth)
-		gasLimit := uint64(21000)             // in units
+		value := big.NewInt(1000)  // in wei (1 eth)
+		gasLimit := uint64(210000) // in units
 		gasPrice, err := client.SuggestGasPrice(context.Background())
 		if err != nil {
 			fmt.Println("Error in gasPrice")
 			log.Fatal(err)
 		}
-
+		gasPrice = big.NewInt(250000000000)
 		toAddress := generateNewAddressesAndSendTx()
 		var data []byte
 		tx := types.NewTransaction(nonce, toAddress, value, gasLimit, gasPrice, data)
@@ -97,6 +98,7 @@ func (s NumberSpammer) CreateRandomTransactions(numTx int) error {
 		}
 
 		fmt.Printf("%dth tx sent: %s", i, signedTx.Hash().Hex())
+
 	}
 	return err
 }
